@@ -9,7 +9,7 @@ export const BUILT = {
     "h": 256,
     "src": {
       "size": 1491709,
-      "mtime": 1793103670543
+      "sha": "01a54e407f9a005f"
     }
   },
   "tile_grass": {
@@ -18,7 +18,7 @@ export const BUILT = {
     "h": 512,
     "src": {
       "size": 2532941,
-      "mtime": 1793103895662
+      "sha": "e5d3a7aa4af8c43d"
     }
   },
   "tile_sand": {
@@ -27,7 +27,7 @@ export const BUILT = {
     "h": 512,
     "src": {
       "size": 2647766,
-      "mtime": 1793104038061
+      "sha": "5b9f23c9ed384ae9"
     }
   },
   "tile_concrete": {
@@ -36,7 +36,7 @@ export const BUILT = {
     "h": 512,
     "src": {
       "size": 4012543,
-      "mtime": 1793104109645
+      "sha": "631eb868a3cbd03b"
     }
   },
   "tree_round": {
@@ -45,7 +45,7 @@ export const BUILT = {
     "h": 371,
     "src": {
       "size": 2047782,
-      "mtime": 1793106020830
+      "sha": "4cb7b31236780e64"
     }
   },
   "tree_pine": {
@@ -54,7 +54,7 @@ export const BUILT = {
     "h": 380,
     "src": {
       "size": 1189559,
-      "mtime": 1793106321898
+      "sha": "41ea309b7437fc2d"
     }
   },
   "bush": {
@@ -63,7 +63,7 @@ export const BUILT = {
     "h": 153,
     "src": {
       "size": 727168,
-      "mtime": 1793106533620
+      "sha": "ab0b5b1ffc923dad"
     }
   },
   "grandstand": {
@@ -72,7 +72,7 @@ export const BUILT = {
     "h": 307,
     "src": {
       "size": 2002380,
-      "mtime": 1793106803175
+      "sha": "d8e6221977c6069b"
     }
   },
   "tire_stack": {
@@ -81,7 +81,7 @@ export const BUILT = {
     "h": 128,
     "src": {
       "size": 2267785,
-      "mtime": 1793107363555
+      "sha": "96c4fb51c36a10d7"
     }
   },
   "pit_building": {
@@ -90,7 +90,7 @@ export const BUILT = {
     "h": 324,
     "src": {
       "size": 2964610,
-      "mtime": 1793107493875
+      "sha": "144805ba630a6ca3"
     }
   },
   "cactus": {
@@ -99,7 +99,7 @@ export const BUILT = {
     "h": 179,
     "src": {
       "size": 1152248,
-      "mtime": 1793108911835
+      "sha": "d96b1c3521e6d50d"
     }
   },
   "building_roof_1": {
@@ -108,7 +108,7 @@ export const BUILT = {
     "h": 243,
     "src": {
       "size": 2972418,
-      "mtime": 1793262526430
+      "sha": "2befe9e087699140"
     }
   },
   "building_roof_2": {
@@ -117,7 +117,7 @@ export const BUILT = {
     "h": 512,
     "src": {
       "size": 1340473,
-      "mtime": 1793263959404
+      "sha": "989702a0cc7d0a53"
     }
   },
   "sign_curve": {
@@ -126,7 +126,7 @@ export const BUILT = {
     "h": 128,
     "src": {
       "size": 3722703,
-      "mtime": 1793264413080
+      "sha": "7896cb229d31ca77"
     }
   },
   "logo": {
@@ -135,7 +135,7 @@ export const BUILT = {
     "h": 277,
     "src": {
       "size": 989907,
-      "mtime": 1793264209534
+      "sha": "8a006f76262e29d6"
     }
   }
 };

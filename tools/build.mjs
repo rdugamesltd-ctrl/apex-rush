@@ -13,6 +13,7 @@ import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import * as esbuild from 'esbuild';
+import { staleImages } from './check-images.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
@@ -25,11 +26,20 @@ const write = (file, data) => {
   return file;
 };
 
-// 1. art: re-run the optimizer for any changed PNG (needs Chrome / Edge)
-try {
-  execFileSync(process.execPath, [rel('tools/optimize-images.mjs')], { stdio: ['ignore', 'ignore', 'inherit'] });
-} catch {
-  console.warn('! Could not run the image optimizer; using the WebPs from the last `npm run optimize`.');
+// 1. art: re-run the optimizer only if a PNG changed. It needs Chrome / Edge,
+// which build servers (Vercel, Netlify) don't have: commit assets/game/ and
+// src/assets/built.js after `npm run optimize` on your own computer.
+let stale = await staleImages();
+if (stale.length) {
+  try {
+    execFileSync(process.execPath, [rel('tools/optimize-images.mjs')], { stdio: 'ignore' });
+    stale = await staleImages();
+  } catch {
+    /* no browser here */
+  }
+  if (stale.length) {
+    console.warn(`! Images not optimized (${stale.join(', ')}). Run \`npm run optimize\` locally and commit assets/game/ + src/assets/built.js.`);
+  }
 }
 const { BUILT, BUILT_DIR } = await import(`file:///${rel('src/assets/built.js').replace(/\\/g, '/')}?t=${Date.now()}`);
 

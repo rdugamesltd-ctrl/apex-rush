@@ -16,6 +16,7 @@ import { fileURLToPath } from 'node:url';
 import puppeteer from 'puppeteer-core';
 import { startServer } from './server.mjs';
 import { ASSETS, IMAGE_DIR } from '../src/assets/manifest.js';
+import { pngHash } from './check-images.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT_DIR = 'assets/game/';
@@ -59,11 +60,13 @@ try {
       continue;
     }
     const st = fs.statSync(srcFile);
-    const stamp = { size: st.size, mtime: Math.round(st.mtimeMs) };
+    const stamp = { size: st.size, sha: pngHash(srcFile) };
     const prev = previous[a.key];
     before += st.size;
-    if (!force && prev && prev.src?.size === stamp.size && prev.src?.mtime === stamp.mtime && fs.existsSync(path.join(root, OUT_DIR, prev.file))) {
-      built[a.key] = prev;
+    // same contents as last time (older builds stored size + date instead of a hash)
+    const same = prev && (prev.src?.sha ? prev.src.sha === stamp.sha : prev.src?.size === stamp.size && prev.src?.mtime === Math.round(st.mtimeMs));
+    if (!force && same && fs.existsSync(path.join(root, OUT_DIR, prev.file))) {
+      built[a.key] = { ...prev, src: stamp };
       after += fs.statSync(path.join(root, OUT_DIR, prev.file)).size;
       console.log(`  ${a.key.padEnd(16)} unchanged`);
       continue;

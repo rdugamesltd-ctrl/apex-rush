@@ -57,6 +57,7 @@ The project folder itself also runs on a server without building, but it loads ~
 Load time on a phone-like setup (10 Mbps, 4× slower CPU): menu after about 2.5 s from `dist/` (it was 34 s before the art was optimized). Measure with `npm run loadtime -- --dist` (`--mbps=3 --rtt=150` for a weak connection).
 
 - **GitHub Pages:** push the contents of `dist/` to a repository (or a `gh-pages` branch) and enable Pages.
+- **Vercel:** import the Git repository; `vercel.json` already sets the build command (`npm run build`), the output folder (`dist`) and caching. Build servers have no Chrome, so run `npm run optimize` on your computer after changing art and commit `assets/game/` and `src/assets/built.js`.
 - **Netlify:** drag the `dist/` folder onto app.netlify.com/drop.
 - **itch.io:** zip the contents of `dist/` and upload it as an HTML game.
 - **Your own server:** copy `dist/` to the web root. Make sure the server compresses `.js`/`.css` (gzip or brotli); `.htaccess` does this on Apache. `npm run serve:dist` is a small Node server that does it too.
