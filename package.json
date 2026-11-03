@@ -6,12 +6,17 @@
   "description": "Top-down formula racing game for web and mobile (Phaser 3).",
   "scripts": {
     "start": "node tools/server.mjs 8080",
-    "check": "node tools/check-tracks.mjs && node tools/sim.mjs",
+    "check": "node tools/check-images.mjs && node tools/check-tracks.mjs && node tools/sim.mjs",
     "smoke": "node tools/smoke.mjs",
     "profile": "node tools/profile.mjs",
-    "devices": "node tools/devices.mjs"
+    "devices": "node tools/devices.mjs",
+    "optimize": "node tools/optimize-images.mjs",
+    "build": "node tools/build.mjs",
+    "serve:dist": "node tools/server.mjs 8080 --dist",
+    "loadtime": "node tools/loadtime.mjs"
   },
   "devDependencies": {
+    "esbuild": "^0.28.2",
     "puppeteer-core": "^24.43.1"
   }
 }

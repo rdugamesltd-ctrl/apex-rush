@@ -9,6 +9,7 @@ import { BootScene } from './scenes/BootScene.js';
 import { RaceScene } from './scenes/RaceScene.js';
 import { initPerf, loadPerf, effectiveQuality, resolutionScale, setFrameMode, refreshFrozen } from './perf.js';
 
+performance.mark('apex:main');
 save.load();
 loadPerf();
 const params = new URLSearchParams(location.search);
@@ -39,6 +40,8 @@ const game = new Phaser.Game({
   scale: { mode: Phaser.Scale.NONE, zoom: 1 / display.dpr },
   render: { antialias: true, powerPreference: 'high-performance' },
   input: { keyboard: false, mouse: false, touch: false, gamepad: false },
+  // plain <img> loading: reuses the images index.html preloads, and skips the blob copies
+  loader: { imageLoadType: 'HTMLImageElement' },
   audio: { noAudio: true },
   banner: false,
   scene: [BootScene, RaceScene],
@@ -113,10 +116,19 @@ bus.on('boot:done', () => {
     };
     startScene(lastCfg);
   } else {
-    startAttract();
+    // menu first, so it paints straight away; the background race is built a
+    // frame later and fades in behind it
     UI.show('menu');
+    requestAnimationFrame(() => setTimeout(startAttract, 0));
   }
 });
+
+bus.on('scene:ready', () =>
+  requestAnimationFrame(() => {
+    if (!performance.getEntriesByName('apex:world').length) performance.mark('apex:world');
+    document.body.classList.remove('world-wait');
+  })
+);
 
 bus.on('ui:start', (cfg) => {
   lastCfg = { mode: 'race', ...cfg, debug: params.has('debug') };

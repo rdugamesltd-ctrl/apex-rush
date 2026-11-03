@@ -251,17 +251,26 @@ export function softShadow(scene, key, blur = 0.035) {
   const c = makeCanvas(W, H);
   const g = c.getContext('2d', { willReadFrequently: true });
   g.imageSmoothingQuality = 'high';
+  const r = Math.max(1, Math.round((big * blur) / down));
+  // the browser's blur is native code; three box passes of radius r match a
+  // gaussian of sigma sqrt(r(r+1)). Older Safari has no ctx.filter: blur in JS.
+  const native = typeof g.filter === 'string';
+  if (native) g.filter = `blur(${Math.sqrt(r * (r + 1)).toFixed(2)}px)`;
   g.drawImage(src, pad, pad, w, h);
+  if (native) g.filter = 'none';
   const img = g.getImageData(0, 0, W, H);
   const d = img.data;
-  const a = new Float32Array(W * H);
-  for (let i = 0; i < a.length; i++) a[i] = d[i * 4 + 3];
-  blurAlpha(a, W, H, Math.max(1, Math.round((big * blur) / down)));
-  for (let i = 0; i < a.length; i++) {
+  let a = null;
+  if (!native) {
+    a = new Float32Array(W * H);
+    for (let i = 0; i < a.length; i++) a[i] = d[i * 4 + 3];
+    blurAlpha(a, W, H, r);
+  }
+  for (let i = 0, n = W * H; i < n; i++) {
     d[i * 4] = 0;
     d[i * 4 + 1] = 0;
     d[i * 4 + 2] = 0;
-    d[i * 4 + 3] = Math.min(255, a[i] * 1.08);
+    d[i * 4 + 3] = Math.min(255, (a ? a[i] : d[i * 4 + 3]) * 1.08);
   }
   g.putImageData(img, 0, 0);
   addCanvas(scene, out, c);

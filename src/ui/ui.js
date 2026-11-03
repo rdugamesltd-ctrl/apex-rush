@@ -71,6 +71,7 @@ export const UI = {
     this.screenEl.hidden = false;
     this.currentEl = this.screenEl;
     SCREENS[name].render(this.screenEl, this, data);
+    if (name === 'menu' && !performance.getEntriesByName('apex:menu').length) performance.mark('apex:menu');
     // entrance transition for a newly shown screen (not for refreshes of the same one)
     this.screenEl.classList.add('enter');
     clearTimeout(this.enterTimer);

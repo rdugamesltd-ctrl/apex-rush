@@ -115,6 +115,7 @@ export class RaceScene extends Phaser.Scene {
       sfx.startEngine();
       bus.emit('race:start');
     }
+    bus.emit('scene:ready');
   }
 
   applyRaceSettings(s) {

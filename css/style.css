@@ -69,6 +69,12 @@ body {
 #game {
   position: fixed;
   inset: 0;
+  transition: opacity 600ms var(--ease-out);
+}
+
+/* until the first scene is built (the menu shows first) */
+body.world-wait #game {
+  opacity: 0;
 }
 
 #game canvas {
@@ -2630,15 +2636,6 @@ body.touch .hud-btn.reset {
 .tc-pedal.gas {
   height: clamp(116px, 33vmin, 196px);
   background: linear-gradient(180deg, rgba(60, 230, 140, 0.5), rgba(15, 160, 95, 0.38));
-}
-
-.tc-pedal.drift {
-  width: clamp(56px, 14vmin, 86px);
-  height: clamp(60px, 16vmin, 96px);
-  background: linear-gradient(180deg, rgba(255, 120, 190, 0.5), rgba(220, 50, 140, 0.38));
-  justify-content: center;
-  padding-bottom: 0;
-  font-size: 11px;
 }
 
 .pedal-face {

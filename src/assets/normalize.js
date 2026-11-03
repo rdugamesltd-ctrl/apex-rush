@@ -192,10 +192,9 @@ export function seamRatio(canvas) {
   return seam / ns / Math.max(1, inner / ni);
 }
 
-// Replace a loaded Phaser texture with its normalised canvas version.
-export function normalizeTexture(scene, entry) {
-  const tex = scene.textures.get(entry.key);
-  const src = tex.getSourceImage();
+// The full clean-up for one manifest entry. Also run ahead of time by
+// tools/optimize-images.mjs, which saves the result as a small WebP.
+export function normalizeImage(src, entry) {
   let c;
   if (entry.kind === 'tile') {
     c = imageToCanvas(src, entry.max);
@@ -208,6 +207,12 @@ export function normalizeTexture(scene, entry) {
     removeBackground(c);
     c = scaleToMax(trim(c), entry.max);
   }
+  return c;
+}
+
+// Replace a loaded Phaser texture with its normalised canvas version.
+export function normalizeTexture(scene, entry) {
+  const c = normalizeImage(scene.textures.get(entry.key).getSourceImage(), entry);
   scene.textures.remove(entry.key);
   scene.textures.addCanvas(entry.key, c);
   return c;

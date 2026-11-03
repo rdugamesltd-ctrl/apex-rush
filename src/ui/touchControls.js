@@ -2,7 +2,7 @@
 // slide between pads (e.g. from left to right) without lifting.
 import { ICON } from './util.js';
 
-export const touchState = { left: false, right: false, gas: false, brake: false, handbrake: false };
+export const touchState = { left: false, right: false, gas: false, brake: false };
 
 const pointers = new Map(); // pointerId -> control name
 let root = null;
@@ -29,7 +29,6 @@ export function createTouchControls(parent) {
       <div class="tc-pad" data-tc="right">${ICON.right}</div>
     </div>
     <div class="tc-pedals">
-      <div class="tc-pedal drift" data-tc="handbrake"><b>DRIFT</b></div>
       <div class="tc-pedal brake" data-tc="brake"><span class="pedal-face"></span><b>BRAKE</b></div>
       <div class="tc-pedal gas" data-tc="gas"><span class="pedal-face"></span><b>GAS</b></div>
     </div>`;

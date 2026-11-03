@@ -1,7 +1,7 @@
 // Headless smoke test: loads the game in Chrome/Edge, clicks through the menus,
 // runs an autopilot race on every track, fails on any JS error and saves
 // screenshots to tools/screenshots/.
-// Usage: npm run smoke   (needs: npm install)
+// Usage: npm run smoke [-- trackId] [-- --dist]   (needs: npm install; --dist tests the `npm run build` output)
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -29,8 +29,10 @@ if (!executablePath) {
 
 const PORT = Number(process.env.PORT) || 8123;
 const BASE = `http://localhost:${PORT}/`;
-const only = process.argv[2];
-const server = await startServer(PORT);
+const only = process.argv.slice(2).find((a) => !a.startsWith('--'));
+const useDist = process.argv.includes('--dist');
+const server = await startServer(PORT, useDist ? { dir: path.join(here, '..', 'dist') } : undefined);
+if (useDist) console.log('testing dist/');
 const browser = await puppeteer.launch({
   executablePath,
   headless: true,

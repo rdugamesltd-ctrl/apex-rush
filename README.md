@@ -35,7 +35,7 @@ Any other static server works too, for example `python -m http.server 8080`.
 |---|---|---|
 | Gas | ↑ or W | GAS pedal (bottom right) |
 | Brake / reverse | ↓ or S | BRAKE pedal |
-| Handbrake (drift) | Space or Left Shift | DRIFT pedal |
+| Handbrake (drift) | Space or Left Shift | (keyboard only) |
 | Steer | ← → or A D | arrow pads (bottom left) |
 | Reset car | R | reset button under pause (also automatic when stuck) |
 | Pause | Esc or P | pause button (top left) |
@@ -46,15 +46,20 @@ To put steering on the right and pedals on the left, open Settings and set **Tou
 
 All art is drawn in code until you add images. **[ASSET_PROMPTS.md](ASSET_PROMPTS.md)** has a ready-to-paste ChatGPT prompt for every image, with the exact filenames and sizes.
 
-To use an image, save it as `assets/images/<name>.png` and reload the page. Backgrounds are removed automatically, empty margins are trimmed, and ground textures are made seamless. The browser console lists which custom images were loaded.
+To use an image, save it as `assets/images/<name>.png` and run **`npm run optimize`**. Backgrounds are removed, empty margins trimmed and ground textures made seamless, and the result is saved as a small WebP in `assets/game/` (the 1–4 MB PNGs from ChatGPT become 10–120 KB). The game loads only those WebPs, so always re-run `npm run optimize` after adding or replacing a PNG; `npm run check` fails if you forgot. (On a local or Wi-Fi dev server, a brand-new image also shows up without optimizing, but more slowly; `?raw` forces the original PNGs.) The browser console lists which custom images were loaded.
 
 ## Deploy
 
-Upload the whole folder to any static host; there is nothing to build. You can leave out `node_modules/`, `tools/` and `examples/`.
+Run **`npm run build`** and upload the contents of **`dist/`** (about 2.3 MB, 1.4 MB with compression). The build bundles all game code into one minified file, gives Phaser, code and CSS content-hashed names (so they can be cached for a year and still update), copies only the optimized art, and writes a service worker with the exact file list. It also writes `_headers` (Netlify, Cloudflare Pages) and `.htaccess` (Apache) with caching and compression rules. Check the build locally with `npm run serve:dist`.
 
-- **GitHub Pages:** push the folder to a repository and enable Pages.
-- **Netlify:** drag the folder onto app.netlify.com/drop.
-- **itch.io:** zip the folder and upload it as an HTML game.
+The project folder itself also runs on a server without building, but it loads ~50 separate code files, so use `dist/` for real players. Never upload `assets/images/` (the source PNGs, ~31 MB) or `node_modules/`.
+
+Load time on a phone-like setup (10 Mbps, 4× slower CPU): menu after about 2.5 s from `dist/` (it was 34 s before the art was optimized). Measure with `npm run loadtime -- --dist` (`--mbps=3 --rtt=150` for a weak connection).
+
+- **GitHub Pages:** push the contents of `dist/` to a repository (or a `gh-pages` branch) and enable Pages.
+- **Netlify:** drag the `dist/` folder onto app.netlify.com/drop.
+- **itch.io:** zip the contents of `dist/` and upload it as an HTML game.
+- **Your own server:** copy `dist/` to the web root. Make sure the server compresses `.js`/`.css` (gzip or brotli); `.htaccess` does this on Apache. `npm run serve:dist` is a small Node server that does it too.
 
 On phones, use **Add to Home Screen** to get fullscreen landscape play. Over https the service worker (`sw.js`) caches the game, so the installed app also starts offline. Bump `CACHE` in `sw.js` when you want installed copies to drop their old files (they refresh from the network anyway whenever online).
 
@@ -103,8 +108,9 @@ tools/                         dev server and test scripts
 
 ```bash
 npm install          # one time: installs puppeteer-core for the browser test
-npm run check        # validates track geometry and simulates AI races on every track
+npm run check        # optimized images up to date, track geometry valid, AI race simulation on every track
 npm run smoke        # opens the game in headless Chrome/Edge and plays through menus and a race on each track
+npm run smoke -- --dist   # the same against the dist/ build
 ```
 
 `npm run smoke` saves screenshots to `tools/screenshots/`.
