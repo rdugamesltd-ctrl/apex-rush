@@ -1,0 +1,17 @@
+{
+  "name": "apex-rush",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Top-down formula racing game for web and mobile (Phaser 3).",
+  "scripts": {
+    "start": "node tools/server.mjs 8080",
+    "check": "node tools/check-tracks.mjs && node tools/sim.mjs",
+    "smoke": "node tools/smoke.mjs",
+    "profile": "node tools/profile.mjs",
+    "devices": "node tools/devices.mjs"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^24.43.1"
+  }
+}
