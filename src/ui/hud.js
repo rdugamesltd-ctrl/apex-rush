@@ -47,14 +47,13 @@ export function createHud(parent) {
     <ol class="hud-standings" data-h="stand"></ol>
     <div class="hud-lights" data-h="lights"><i></i><i></i><i></i><i></i><i></i></div>
     <div class="hud-pops" data-h="pops"></div>
-    <div class="hud-wrong" data-h="wrong">WRONG WAY</div>
-    <div class="hud-hint" data-h="hint">↑ / W gas · ↓ / S brake · Space handbrake (drift) · ← → steer · R reset · Esc pause</div>`;
+    <div class="hud-wrong" data-h="wrong">WRONG WAY</div>`;
   parent.appendChild(el);
 
   const $ = (k) => el.querySelector(`[data-h="${k}"]`);
   const refs = {};
   for (const k of [
-    'pos', 'tot', 'lap', 'laps', 'gear', 'spd', 'unit', 'rpm', 'time', 'best', 'delta', 'stand', 'lights', 'pops', 'wrong', 'hint',
+    'pos', 'tot', 'lap', 'laps', 'gear', 'spd', 'unit', 'rpm', 'time', 'best', 'delta', 'stand', 'lights', 'pops', 'wrong',
     'corner', 'cArrow', 'cName', 'cMsg', 'drift', 'dPts', 'dMult',
   ]) {
     refs[k] = $(k);
@@ -174,7 +173,7 @@ export function createHud(parent) {
 
   const hud = {
     el,
-    init({ track, laps, total, unitsSetting, showHint }) {
+    init({ track, laps, total, unitsSetting }) {
       units = unitsSetting;
       set('tot', String(total));
       set('laps', String(laps));
@@ -191,7 +190,6 @@ export function createHud(parent) {
       refs.wrong.classList.remove('on');
       refs.lights.className = 'hud-lights';
       refs.lights.querySelectorAll('i').forEach((i) => (i.className = ''));
-      refs.hint.classList.toggle('on', !!showHint);
       requestAnimationFrame(() => buildMinimap(track));
     },
     update(rm, player, dt) {
@@ -279,7 +277,6 @@ export function createHud(parent) {
       refs.lights.classList.add('out');
       setTimeout(() => refs.lights.classList.remove('show', 'out'), 1200);
       hud.popup('GO!', 'go');
-      refs.hint.classList.remove('on');
     },
     popup(text, kind = '') {
       const p = document.createElement('div');

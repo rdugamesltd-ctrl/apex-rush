@@ -1,0 +1,23 @@
+export default {
+  id: 'savanna',
+  name: 'Savanna Run',
+  theme: 'savanna',
+  difficulty: 'medium',
+  width: 320,
+  scale: 92,
+  startOffset: 1300,
+  points: [
+    [0, 0, 6],
+    [50, 0, 12],
+    [62, 10, 6],
+    [58, 24, 6],
+    [40, 22, 5],
+    [32, 34, 6],
+    [48, 44, 7],
+    [36, 56, 8],
+    [6, 52, 7],
+    [-6, 38, 6],
+    [4, 24, 5],
+    [-10, 14, 6],
+  ],
+};

@@ -1,0 +1,27 @@
+export default {
+  id: 'volcano',
+  name: 'Inferno Ring',
+  theme: 'volcano',
+  difficulty: 'insane',
+  width: 280,
+  scale: 82,
+  startOffset: 1300,
+  runoff: 55,
+  barrierGap: 180,
+  lake: { margin: 300, style: 'lava', shore: 80 }, // lava pool in the infield
+  points: [
+    [0, 0, 5],
+    [48, 0, 4],
+    [56, 10, 3.6],
+    [44, 16, 3.6],
+    [52, 28, 4],
+    [60, 40, 5],
+    [44, 48, 4],
+    [36, 38, 3.6],
+    [22, 48, 4.5],
+    [4, 44, 4],
+    [8, 30, 3.6],
+    [-6, 24, 4],
+    [-8, 8, 4],
+  ],
+};

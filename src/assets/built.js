@@ -129,6 +129,159 @@ export const BUILT = {
       "sha": "7896cb229d31ca77"
     }
   },
+  "tile_autumn": {
+    "file": "tile_autumn.1ab1dc1a.webp",
+    "w": 512,
+    "h": 512,
+    "src": {
+      "size": 1885325,
+      "sha": "54fe84ac2879213c"
+    }
+  },
+  "tile_beach": {
+    "file": "tile_beach.067ee6e3.webp",
+    "w": 512,
+    "h": 512,
+    "src": {
+      "size": 2245085,
+      "sha": "b55579316f53e6e0"
+    }
+  },
+  "tile_snow": {
+    "file": "tile_snow.d89c1c26.webp",
+    "w": 512,
+    "h": 512,
+    "src": {
+      "size": 2377427,
+      "sha": "6a1b7cd11a6a0110"
+    }
+  },
+  "tile_savanna": {
+    "file": "tile_savanna.b21ae9d3.webp",
+    "w": 512,
+    "h": 512,
+    "src": {
+      "size": 4342443,
+      "sha": "02c684032e68be39"
+    }
+  },
+  "tile_redrock": {
+    "file": "tile_redrock.2ff6e2a1.webp",
+    "w": 512,
+    "h": 512,
+    "src": {
+      "size": 3787877,
+      "sha": "b80f702477d52b5e"
+    }
+  },
+  "tile_basalt": {
+    "file": "tile_basalt.6cfbae17.webp",
+    "w": 512,
+    "h": 512,
+    "src": {
+      "size": 3731606,
+      "sha": "0dabf0dcc42d2ade"
+    }
+  },
+  "tile_yard": {
+    "file": "tile_yard.1a709ae9.webp",
+    "w": 512,
+    "h": 512,
+    "src": {
+      "size": 4322316,
+      "sha": "278e7af35938b033"
+    }
+  },
+  "tree_autumn": {
+    "file": "tree_autumn.bc047067.webp",
+    "w": 384,
+    "h": 371,
+    "src": {
+      "size": 2436688,
+      "sha": "ad05b8d302c27245"
+    }
+  },
+  "tree_snow": {
+    "file": "tree_snow.68943f65.webp",
+    "w": 380,
+    "h": 384,
+    "src": {
+      "size": 2527697,
+      "sha": "4a876f2279bacffc"
+    }
+  },
+  "palm_tree": {
+    "file": "palm_tree.da239952.webp",
+    "w": 384,
+    "h": 379,
+    "src": {
+      "size": 2657115,
+      "sha": "5e836c4bc3710e0d"
+    }
+  },
+  "acacia": {
+    "file": "acacia.ec74d509.webp",
+    "w": 384,
+    "h": 254,
+    "src": {
+      "size": 3464434,
+      "sha": "908e1d287e06498a"
+    }
+  },
+  "tree_dead": {
+    "file": "tree_dead.319a6d83.webp",
+    "w": 256,
+    "h": 253,
+    "src": {
+      "size": 1671557,
+      "sha": "adde821d1c95dc13"
+    }
+  },
+  "rock_red": {
+    "file": "rock_red.4876b567.webp",
+    "w": 256,
+    "h": 231,
+    "src": {
+      "size": 2564389,
+      "sha": "2c390a6a653538ac"
+    }
+  },
+  "hay_bale": {
+    "file": "hay_bale.d63e4903.webp",
+    "w": 160,
+    "h": 159,
+    "src": {
+      "size": 3684751,
+      "sha": "8efe928cd4f19bd8"
+    }
+  },
+  "beach_umbrella": {
+    "file": "beach_umbrella.8d086ef0.webp",
+    "w": 160,
+    "h": 160,
+    "src": {
+      "size": 2266526,
+      "sha": "4b7cbe0e21cb2791"
+    }
+  },
+  "container_stack": {
+    "file": "container_stack.457bbee6.webp",
+    "w": 512,
+    "h": 256,
+    "src": {
+      "size": 2890484,
+      "sha": "99300263b5706e02"
+    }
+  },
+  "warehouse_roof": {
+    "file": "warehouse_roof.a497c322.webp",
+    "w": 512,
+    "h": 254,
+    "src": {
+      "size": 2999953,
+      "sha": "5168feda4af02ccd"
+    }
+  },
   "logo": {
     "file": "logo.811577eb.webp",
     "w": 1024,

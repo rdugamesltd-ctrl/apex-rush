@@ -51,6 +51,8 @@ export class RaceManager {
     this.lights = 0;
     this.goAt = 4.2 + 0.6 + this.rand() * 1.0;
     this.finishedCount = 0;
+    this.gasDownAt = -1; // when the player last pressed the gas (launch timing)
+    this.launchDone = false;
     this.player = null;
     this.overtakes = 0;
     this.drift = new DriftScore();
@@ -123,11 +125,13 @@ export class RaceManager {
   update(dt, playerCtl) {
     this.clock += dt;
     if (this.state === 'lights') {
+      this.watchLaunch(playerCtl);
       this.updateLights();
       for (const car of this.cars) car.throttle = car.isPlayer ? playerCtl.throttle : 0;
       return;
     }
     this.time += dt;
+    this.watchLaunch(playerCtl);
 
     for (const car of this.cars) {
       const ai = this.drivers.get(car);
@@ -180,6 +184,23 @@ export class RaceManager {
     }
   }
 
+  // Perfect start: press the gas as the lights go out. It rewards reacting, not
+  // holding the pedal through the countdown (lights-out timing is random).
+  watchLaunch(ctl) {
+    const p = this.player;
+    if (!p || this.launchDone || this.opts.autopilot) return;
+    if (ctl.throttle > 0 && p.throttle === 0) this.gasDownAt = this.clock;
+    if (this.state !== 'racing') return;
+    const late = this.clock - this.goAt;
+    if (ctl.throttle > 0 && this.gasDownAt >= this.goAt - 0.1 && late <= 0.35) {
+      this.launchDone = true;
+      p.boost = 1.2;
+      this.hooks.onPerfectStart?.();
+    } else if (late > 0.35) {
+      this.launchDone = true;
+    }
+  }
+
   trackCar(car) {
     const t = this.track;
     const L = t.length;
@@ -209,9 +230,12 @@ export class RaceManager {
     car.lat = side * limit;
     const vn = car.vx * nx + car.vy * ny;
     if (vn > 0) {
-      car.vx -= nx * vn * 1.35;
-      car.vy -= ny * vn * 1.35;
-      const loss = Math.min(0.5, vn / 1400);
+      // a glancing scrape slides along the barrier keeping most of its speed; a
+      // square hit bounces off harder and costs a lot more
+      const bounce = vn < 150 ? 1.1 : 1.35;
+      car.vx -= nx * vn * bounce;
+      car.vy -= ny * vn * bounce;
+      const loss = Math.min(0.5, (vn / 1400) * Math.min(1, vn / 400));
       car.vx *= 1 - loss;
       car.vy *= 1 - loss;
       const err = wrapAngle(t.heading[i] - car.heading);
@@ -241,18 +265,21 @@ export class RaceManager {
             if (d >= R2 || d < 0.001) continue;
             const nx = dx / d;
             const ny = dy / d;
-            const pen = (R2 - d) / 2;
-            A.x -= nx * pen;
-            A.y -= ny * pen;
-            B.x += nx * pen;
-            B.y += ny * pen;
+            // the heavier car (the player's) moves less on contact
+            const wa = B.mass / (A.mass + B.mass);
+            const wb = 1 - wa;
+            const pen = R2 - d;
+            A.x -= nx * pen * wa;
+            A.y -= ny * pen * wa;
+            B.x += nx * pen * wb;
+            B.y += ny * pen * wb;
             const vrel = (B.vx - A.vx) * nx + (B.vy - A.vy) * ny;
             if (vrel < 0) {
-              const j = (-(1.3) * vrel) / 2;
-              A.vx -= nx * j;
-              A.vy -= ny * j;
-              B.vx += nx * j;
-              B.vy += ny * j;
+              const j = -1.3 * vrel;
+              A.vx -= nx * j * wa;
+              A.vy -= ny * j * wa;
+              B.vx += nx * j * wb;
+              B.vy += ny * j * wb;
               if (-vrel > 90) this.hooks.onBump?.(A, B, -vrel, (ca[0] + cb[0]) / 2, (ca[1] + cb[1]) / 2);
             }
           }

@@ -43,6 +43,45 @@ const LAKE_STYLES = {
     ],
     palms: true,
   },
+  lagoon: {
+    rings: [
+      [-1, 0xf6ecc8],
+      [-0.7, 0xf0e2b8],
+      [-12, 0xe2d2a4],
+      [0, 0x86ece2],
+      [40, 0x52d6d8],
+      [110, 0x30bacf],
+      [220, 0x229ec6],
+      [360, 0x1b88b6],
+    ],
+    palms: true,
+    boats: true,
+  },
+  ice: {
+    rings: [
+      [-1, 0xf4f8fc],
+      [-0.6, 0xe2ebf4],
+      [-12, 0xc8d6e6],
+      [0, 0xcbe8f4],
+      [40, 0xb4def0],
+      [130, 0x9ed2ea],
+      [260, 0x8cc6e2],
+    ],
+  },
+  lava: {
+    rings: [
+      [-1, 0x2a2624],
+      [-0.55, 0x3a2622],
+      [-12, 0x5a1e10],
+      [0, 0xc8361a],
+      [30, 0xea5a1c],
+      [90, 0xff8a24],
+      [180, 0xffb43a],
+      [300, 0xffd65a],
+    ],
+    foam: 0xffc040, // glowing edge instead of white surf
+    glint: 0xffa040,
+  },
 };
 
 export const DEPTH = {
@@ -177,9 +216,10 @@ export class TrackRenderer {
     // ring distances between -1 and 0 are fractions of the shore width
     for (const [d, color] of style.rings) this.fillPoly(g, t.lakeRing(d > -1.01 && d < 0 ? Math.round(d * width) : d), color);
     // foam where the water laps the shore
-    g.lineStyle(5, 0xffffff, 0.5);
+    const foam = style.foam ?? 0xffffff;
+    g.lineStyle(5, foam, 0.5);
     g.strokePoints(shore.map(([x, y]) => ({ x, y })), true, true);
-    g.lineStyle(3, 0xffffff, 0.22);
+    g.lineStyle(3, foam, 0.22);
     g.strokePoints(t.lakeRing(14).map(([x, y]) => ({ x, y })), true, true);
 
     let x0 = Infinity;
@@ -201,18 +241,18 @@ export class TrackRenderer {
     const inWater = (x, y, m) => t.nearestWithin(x, y, deep + m) < 0 && t.insideLoop(x, y);
     const rand = this.rand;
     if (style.palms) {
-      // palms around the oasis, on the green ring
+      // palms around the oasis / lagoon, on the shore
       const ring = t.lakeRing(-Math.round(width * 0.5));
       for (let k = 0; k < ring.length; k += 2 + ((rand() * 3) | 0)) {
         const [x, y] = ring[k];
         const w = 120 + rand() * 60;
-        this.place('tree_pine', x + (rand() - 0.5) * 50, y + (rand() - 0.5) * 50, w, rand() * Math.PI * 2, {
+        this.place('palm_tree', x + (rand() - 0.5) * 50, y + (rand() - 0.5) * 50, w, rand() * Math.PI * 2, {
           shadow: Math.round(w * 0.18),
         });
       }
     }
     if (style.boats) this.buildJetty(shore, cx, cy, inWater);
-    this.buildGlints(shore, cx, cy, inWater);
+    this.buildGlints(shore, cx, cy, inWater, style.glint);
   }
 
   buildJetty(shore, cx, cy, inWater) {
@@ -282,7 +322,8 @@ export class TrackRenderer {
   }
 
   // Sun glints twinkling on the open water.
-  buildGlints(shore, cx, cy, inWater) {
+  // tint: glint colour (lava glows orange)
+  buildGlints(shore, cx, cy, inWater, tint) {
     if (!this.hq) return;
     const scene = this.scene;
     const rand = this.rand;
@@ -300,6 +341,7 @@ export class TrackRenderer {
         .setBlendMode(Phaser.BlendModes.ADD)
         .setScale(s)
         .setAlpha(0);
+      if (tint) glint.setTint(tint);
       scene.tweens.add({
         targets: glint,
         alpha: 0.85,

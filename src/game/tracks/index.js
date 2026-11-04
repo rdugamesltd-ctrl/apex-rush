@@ -1,11 +1,28 @@
 import { Track } from '../Track.js';
 import { DIFFICULTIES } from '../../config.js';
 import harbor from './harbor.js';
+import maple from './maple.js';
+import coral from './coral.js';
 import pine from './pine.js';
+import savanna from './savanna.js';
+import frost from './frost.js';
+import docks from './docks.js';
 import dunes from './dunes.js';
+import canyon from './canyon.js';
+import glacier from './glacier.js';
+import riviera from './riviera.js';
 import metro from './metro.js';
+import volcano from './volcano.js';
+import containers from './containers.js';
+import wildwood from './wildwood.js';
 
-export const TRACK_DEFS = [harbor, pine, dunes, metro];
+// In unlock order: easiest first, grouped by difficulty.
+export const TRACK_DEFS = [
+  harbor, maple, coral,
+  pine, savanna, frost, docks,
+  dunes, canyon, glacier, riviera,
+  metro, volcano, containers, wildwood,
+];
 
 const cache = new Map();
 

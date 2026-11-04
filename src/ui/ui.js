@@ -4,6 +4,7 @@ import { bus } from '../events.js';
 import { sfx } from '../audio/Sfx.js';
 import { createHud } from './hud.js';
 import { createTouchControls, setTouchOptions, resetTouch } from './touchControls.js';
+import { createBriefing } from './briefing.js';
 import { ICON, esc, fmtCoins } from './util.js';
 import { isCoarsePointer, isMobile } from '../display.js';
 import * as mainMenu from './screens/mainMenu.js';
@@ -32,6 +33,7 @@ export const UI = {
     this.root = root;
     this.hud = createHud(root);
     this.touch = createTouchControls(root);
+    this.briefing = createBriefing(root);
     root.insertAdjacentHTML(
       'beforeend',
       `<div id="screen" class="layer" hidden></div>
@@ -106,6 +108,7 @@ export const UI = {
     else if (act === 'fullscreen') this.toggleFullscreen();
     else if (act === 'pause') this.emit('ui:pause');
     else if (act === 'respawn') this.emit('ui:respawn');
+    else if (act === 'brief-ok') this.briefing.close();
     else SCREENS[this.current]?.action?.(act, t, this, this.data);
   },
 
@@ -177,14 +180,18 @@ export const UI = {
   },
 
   // ---------- race mode ----------
-  enterRace(info) {
+  // With onReady, the controls briefing is shown first and onReady runs once
+  // the player dismisses it.
+  enterRace(info, onReady) {
     this.racing = true;
     document.body.classList.add('racing');
     this.hideScreen();
     this.hud.init(info);
     this.hud.el.classList.add('on');
-    this.touch.classList.toggle('on', isCoarsePointer() || this.sawTouch);
+    const touch = isCoarsePointer() || this.sawTouch;
+    this.touch.classList.toggle('on', touch);
     resetTouch();
+    if (onReady) this.briefing.show({ touch, onDone: onReady });
     if (navigator.wakeLock?.request) {
       navigator.wakeLock
         .request('screen')
@@ -198,6 +205,7 @@ export const UI = {
     document.body.classList.remove('racing');
     this.hud.el.classList.remove('on');
     this.touch.classList.remove('on');
+    this.briefing.hide();
     resetTouch();
     this.wakeLock?.release?.().catch(() => {});
     this.wakeLock = null;

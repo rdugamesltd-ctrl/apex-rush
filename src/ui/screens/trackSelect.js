@@ -174,12 +174,13 @@ export function render(el, ui) {
   el.innerHTML = `
     ${ui.header('Choose Track')}
     <div class="scroll">
-      <div class="track-list">${cards}</div>
       <div class="race-opts card">
         <div class="opt"><label>Laps</label>${seg('laps', LAP_OPTIONS, r.laps, (v) => lapsOpen(sd, v))}</div>
         <div class="opt"><label>Opponents</label>${seg('opp', OPPONENT_OPTIONS, r.opponents, (v) => gridOpen(sd, v))}</div>
         <div class="opt"><label>Difficulty</label><div class="diff-fixed">${diffTag(shown.difficulty)}<small>Set by the track</small></div></div>
+        <div class="opt"><label>Test</label><div class="seg"><button data-act="unlockall">${TRACK_DEFS.every((d) => isUnlocked(d, sd)) ? 'All tracks open' : 'Unlock all tracks'}</button></div></div>
       </div>
+      <div class="track-list">${cards}</div>
     </div>
     <footer class="scr-foot">${foot}</footer>`;
   requestAnimationFrame(() =>
@@ -223,6 +224,11 @@ export function action(act, t, ui) {
     }
     preview = null;
     r.trackId = def.id;
+  } else if (act === 'unlockall') {
+    // Test helper: open every track without spending coins.
+    for (const def of TRACK_DEFS) if (!isUnlocked(def, sd)) sd.unlocked.push(def.id);
+    preview = null;
+    ui.toast('All tracks unlocked');
   } else if (act === 'laps') {
     const v = Number(t.dataset.v);
     if (!lapsOpen(sd, v)) return deny(t, ui, '5-lap races need Endurance from the Shop');

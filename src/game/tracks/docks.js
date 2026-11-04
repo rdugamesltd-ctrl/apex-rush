@@ -1,0 +1,22 @@
+export default {
+  id: 'docks',
+  name: 'Dockyard',
+  theme: 'docks',
+  difficulty: 'medium',
+  width: 300,
+  scale: 86,
+  startOffset: 1400,
+  runoff: 60,
+  points: [
+    [-4, 0, 5],
+    [56, 0, 5],
+    [56, 14, 4],
+    [40, 14, 4],
+    [40, 28, 5],
+    [60, 28, 5],
+    [60, 46, 6],
+    [20, 46, 5],
+    [20, 32, 4],
+    [-4, 32, 5],
+  ],
+};

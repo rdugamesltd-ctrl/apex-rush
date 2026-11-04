@@ -613,6 +613,256 @@ function iconTrophy() {
   return c;
 }
 
+// ---------- extra themes ----------
+// Ground tile: base colour, soft blotches, fine grain, then an optional overlay.
+function groundTile(base, blots, grain, seed, extra) {
+  const s = 256;
+  const c = makeCanvas(s, s);
+  const g = c.getContext('2d');
+  g.fillStyle = base;
+  g.fillRect(0, 0, s, s);
+  speckle(g, s, 120, blots, 6, 22, seed, 0.4);
+  if (extra) extra(g, s, rng(seed + 1));
+  speckle(g, s, 260, grain, 1, 2.8, seed + 2, 0.65);
+  return c;
+}
+
+const drawAutumn = () =>
+  groundTile('#7f9440', ['#71883a', '#8ea04a', '#6c7f36'], ['#97a957', '#5f7230'], 101, (g, s, r) => {
+    // fallen leaves
+    const leaves = ['#e2832b', '#cf5a22', '#f0b13a', '#b8452a'];
+    for (let i = 0; i < 90; i++) {
+      g.save();
+      g.translate(r() * s, r() * s);
+      g.rotate(r() * Math.PI);
+      g.fillStyle = leaves[(r() * leaves.length) | 0];
+      g.beginPath();
+      g.ellipse(0, 0, 4 + r() * 3, 2 + r() * 1.5, 0, 0, Math.PI * 2);
+      g.fill();
+      g.restore();
+    }
+  });
+
+const drawBeach = () =>
+  groundTile('#efe0b6', ['#e8d6a6', '#f6ead0', '#e2cf9c'], ['#d8c38e', '#fff6e2'], 111, (g, s, r) => {
+    for (let i = 0; i < 14; i++) circle(g, r() * s, r() * s, 1.5 + r() * 2, i % 3 ? '#f4c7c0' : '#ffffff'); // shell bits
+  });
+
+const drawSnow = () =>
+  groundTile('#eef3f8', ['#e3eaf2', '#f8fbff', '#dbe4ee'], ['#d2dcea', '#ffffff'], 121, (g, s, r) => {
+    g.strokeStyle = 'rgba(160,180,205,0.25)';
+    g.lineWidth = 2;
+    for (let i = 0; i < 10; i++) {
+      g.beginPath();
+      g.arc(r() * s, r() * s + 40, 40 + r() * 30, Math.PI * 1.2, Math.PI * 1.8);
+      g.stroke();
+    }
+  });
+
+const drawSavanna = () =>
+  groundTile('#c7ae62', ['#bba158', '#d4bd74', '#b09450'], ['#a88e48', '#dcc787'], 131, (g, s, r) => {
+    g.strokeStyle = 'rgba(120,96,40,0.35)';
+    g.lineWidth = 1.5;
+    for (let i = 0; i < 120; i++) {
+      const x = r() * s;
+      const y = r() * s;
+      line(g, x, y, x + (r() - 0.5) * 6, y - 4 - r() * 5); // dry grass tufts
+    }
+  });
+
+const drawRedrock = () =>
+  groundTile('#c5784c', ['#b86b42', '#d38a5c', '#ad6038'], ['#9e5634', '#e3a274'], 141, (g, s, r) => {
+    g.strokeStyle = 'rgba(120,52,24,0.3)';
+    g.lineWidth = 3;
+    for (let i = 0; i < 9; i++) {
+      const y = r() * s;
+      g.beginPath();
+      g.moveTo(0, y);
+      for (let x = 0; x <= s; x += 32) g.lineTo(x, y + Math.sin(x / 40 + i) * 6); // sediment bands
+      g.stroke();
+    }
+  });
+
+const drawBasalt = () =>
+  groundTile('#46413f', ['#3a3534', '#524c49', '#2f2b2a'], ['#5f5854', '#262221'], 151, (g, s, r) => {
+    g.strokeStyle = 'rgba(255,110,40,0.28)';
+    g.lineWidth = 1.5;
+    for (let i = 0; i < 6; i++) {
+      let x = r() * s;
+      let y = r() * s;
+      g.beginPath();
+      g.moveTo(x, y);
+      for (let k = 0; k < 4; k++) g.lineTo((x += (r() - 0.5) * 40), (y += (r() - 0.5) * 40)); // glowing cracks
+      g.stroke();
+    }
+  });
+
+const drawYard = () =>
+  groundTile('#868c93', ['#7b8188', '#91979e', '#757b82'], ['#6d737a', '#a1a7ae'], 161, (g, s, r) => {
+    g.fillStyle = 'rgba(240,200,40,0.55)';
+    g.fillRect(40, 124, 90, 6); // faded paint dash
+    for (let i = 0; i < 4; i++) circle(g, r() * s, r() * s, 10 + r() * 16, 'rgba(40,40,40,0.14)'); // oil stains
+  });
+
+// Round canopy tree in any colours (base, mid, light).
+function canopyTree(seed, base, mid, light) {
+  const c = makeCanvas(200, 200);
+  const g = c.getContext('2d');
+  const r = rng(seed);
+  for (let i = 0; i < 11; i++) {
+    const a = (i / 11) * Math.PI * 2;
+    circle(g, 100 + Math.cos(a) * 58, 100 + Math.sin(a) * 58, 34 + r() * 6, base);
+  }
+  circle(g, 100, 100, 70, base);
+  for (let i = 0; i < 8; i++) {
+    const a = (i / 8) * Math.PI * 2 + 0.3;
+    circle(g, 92 + Math.cos(a) * 36, 92 + Math.sin(a) * 36, 22 + r() * 6, mid);
+  }
+  circle(g, 84, 82, 26, light);
+  return c;
+}
+
+const drawTreeAutumn = () => canopyTree(201, '#c4511f', '#e07a26', '#f6b23e');
+
+function drawTreeSnow() {
+  const c = drawTreePine();
+  const g = c.getContext('2d');
+  const r = rng(211);
+  for (let i = 0; i < 26; i++) {
+    const a = r() * Math.PI * 2;
+    const d = 20 + r() * 64;
+    circle(g, 100 + Math.cos(a) * d - 6, 100 + Math.sin(a) * d - 6, 6 + r() * 8, 'rgba(250,252,255,0.9)');
+  }
+  circle(g, 96, 96, 16, '#ffffff');
+  return c;
+}
+
+// Fronds radiating from the centre.
+function drawPalm() {
+  const c = makeCanvas(220, 220);
+  const g = c.getContext('2d');
+  g.lineCap = 'round';
+  for (let i = 0; i < 9; i++) {
+    const a = (i / 9) * Math.PI * 2 + 0.2;
+    const x = 110 + Math.cos(a) * 96;
+    const y = 110 + Math.sin(a) * 96;
+    g.strokeStyle = '#2f8a3a';
+    g.lineWidth = 26;
+    g.beginPath();
+    g.moveTo(110, 110);
+    g.quadraticCurveTo(110 + Math.cos(a + 0.3) * 60, 110 + Math.sin(a + 0.3) * 60, x, y);
+    g.stroke();
+    g.strokeStyle = '#5cbf4e';
+    g.lineWidth = 8;
+    g.stroke();
+  }
+  circle(g, 110, 110, 16, '#8a6a3a');
+  circle(g, 104, 104, 7, '#b38a4c');
+  return c;
+}
+
+// Flat-topped acacia: wide, thin canopy made of overlapping blobs.
+function drawAcacia() {
+  const c = makeCanvas(260, 200);
+  const g = c.getContext('2d');
+  const r = rng(221);
+  const blobs = [];
+  for (let i = 0; i < 16; i++) blobs.push([50 + r() * 160, 50 + r() * 100, 26 + r() * 18]);
+  for (const [x, y, rad] of blobs) circle(g, x, y, rad, '#5d7a2c');
+  for (const [x, y, rad] of blobs) circle(g, x - 6, y - 6, rad * 0.62, '#7f9c3a');
+  for (const [x, y, rad] of blobs.slice(0, 6)) circle(g, x - 10, y - 10, rad * 0.3, '#9db850');
+  return c;
+}
+
+function drawTreeDead() {
+  const c = makeCanvas(180, 180);
+  const g = c.getContext('2d');
+  const r = rng(231);
+  g.lineCap = 'round';
+  const branch = (x, y, a, len, w, depth) => {
+    const x2 = x + Math.cos(a) * len;
+    const y2 = y + Math.sin(a) * len;
+    g.strokeStyle = depth > 1 ? '#2a2422' : '#3c3431';
+    g.lineWidth = w;
+    line(g, x, y, x2, y2);
+    if (depth < 3) for (const d of [-0.5, 0.45]) branch(x2, y2, a + d + (r() - 0.5) * 0.3, len * 0.6, w * 0.6, depth + 1);
+  };
+  for (let i = 0; i < 5; i++) branch(90, 90, (i / 5) * Math.PI * 2 + r(), 40, 12, 1);
+  circle(g, 90, 90, 14, '#2a2422');
+  return c;
+}
+
+function drawRockRed() {
+  const c = makeCanvas(180, 150);
+  const g = c.getContext('2d');
+  const poly = (pts, fill) => {
+    g.beginPath();
+    pts.forEach(([x, y]) => g.lineTo(x, y));
+    g.closePath();
+    g.fillStyle = fill;
+    g.fill();
+  };
+  poly([[10, 80], [30, 26], [92, 8], [158, 30], [172, 92], [128, 140], [44, 136]], '#a24e2c');
+  poly([[30, 26], [92, 8], [104, 54], [56, 66]], '#d27a4a');
+  poly([[104, 54], [158, 30], [172, 92], [120, 92]], '#b9603a');
+  poly([[56, 66], [104, 54], [120, 92], [78, 108]], '#e39a68');
+  poly([[10, 80], [56, 66], [78, 108], [44, 136]], '#8a3f22');
+  return c;
+}
+
+function drawHayBale() {
+  const c = makeCanvas(120, 120);
+  const g = c.getContext('2d');
+  circle(g, 60, 60, 54, '#c99a3c');
+  g.strokeStyle = '#a97a28';
+  g.lineWidth = 3;
+  for (let rad = 12; rad < 54; rad += 9) {
+    g.beginPath();
+    g.arc(60, 60, rad, 0, Math.PI * 2);
+    g.stroke();
+  }
+  circle(g, 52, 50, 16, 'rgba(255,230,150,0.35)');
+  return c;
+}
+
+function drawUmbrella() {
+  const c = makeCanvas(120, 120);
+  const g = c.getContext('2d');
+  for (let i = 0; i < 8; i++) {
+    g.beginPath();
+    g.moveTo(60, 60);
+    g.arc(60, 60, 54, (i / 8) * Math.PI * 2, ((i + 1) / 8) * Math.PI * 2);
+    g.closePath();
+    g.fillStyle = i % 2 ? '#ffffff' : '#ff5a4e';
+    g.fill();
+  }
+  circle(g, 60, 60, 6, '#3a3a44');
+  return c;
+}
+
+function drawContainers() {
+  const W = 300;
+  const H = 200;
+  const c = makeCanvas(W, H);
+  const g = c.getContext('2d');
+  const cols = ['#d9482b', '#2f6fbf', '#e8a92a', '#2f9a5a', '#7a4fb8', '#d9482b'];
+  const r = rng(241);
+  for (let row = 0; row < 3; row++) {
+    for (let k = 0; k < 2; k++) {
+      const x = 6 + k * 146;
+      const y = 6 + row * 64;
+      g.fillStyle = cols[(r() * cols.length) | 0];
+      g.fillRect(x, y, 140, 58);
+      g.fillStyle = 'rgba(0,0,0,0.18)';
+      for (let rx = x + 8; rx < x + 134; rx += 10) g.fillRect(rx, y + 4, 4, 50); // corrugation
+      g.strokeStyle = 'rgba(0,0,0,0.45)';
+      g.lineWidth = 3;
+      g.strokeRect(x + 1.5, y + 1.5, 137, 55);
+    }
+  }
+  return c;
+}
+
 const DRAW = {
   car: drawCar,
   tile_grass: drawGrass,
@@ -629,6 +879,23 @@ const DRAW = {
   building_roof_1: () => drawRoof(81, '#5d6d7e', '#46525f', '#aeb8c2'),
   building_roof_2: () => drawRoof(82, '#b8694a', '#8e4d33', '#e2c7a8'),
   sign_curve: drawSign,
+  tile_autumn: drawAutumn,
+  tile_beach: drawBeach,
+  tile_snow: drawSnow,
+  tile_savanna: drawSavanna,
+  tile_redrock: drawRedrock,
+  tile_basalt: drawBasalt,
+  tile_yard: drawYard,
+  tree_autumn: drawTreeAutumn,
+  tree_snow: drawTreeSnow,
+  palm_tree: drawPalm,
+  acacia: drawAcacia,
+  tree_dead: drawTreeDead,
+  rock_red: drawRockRed,
+  hay_bale: drawHayBale,
+  beach_umbrella: drawUmbrella,
+  container_stack: drawContainers,
+  warehouse_roof: () => drawRoof(251, '#7d8a96', '#5b6570', '#c9d0d6'),
   logo: null, // the menu falls back to a styled CSS title
   icon_engine: iconEngine,
   icon_turbo: iconTurbo,

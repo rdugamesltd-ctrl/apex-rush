@@ -4,7 +4,7 @@ A top-down formula racing game for the web, built with Phaser 3. It runs on PC (
 
 - **Quick Race:** choose the track, laps (1/3, 5 with Endurance) and opponents (3–7, 11 with Full Grid). Difficulty is fixed per track.
 - **Garage:** upgrade Engine, Turbo, Tyres, Brakes and Aero (5 levels each), paint the car any colour, and set the driver name and number.
-- **4 tracks, one difficulty each:** Harbor Loop (Easy, free), Pine Valley (Medium), Dune Circuit (Hard) and Metro Streets (Insane). Every track except the first is bought with coins; a new track is paid by default (its difficulty's `trackPrice`) unless its def sets `price: 0`.
+- **15 tracks, one difficulty each, in 11 themes:** Easy: Harbor Loop (free), Maple Hills, Coral Bay. Medium: Pine Valley, Savanna Run, Frost Lake, Dockyard. Hard: Dune Circuit, Red Canyon, Glacier Pass, Riviera. Insane: Metro Streets, Inferno Ring, Container Maze, Wildwood. Every track except the first is bought with coins; a new track is paid by default (its difficulty's `trackPrice`) unless its def sets `price: 0`.
 - **Shop:** tracks, perks (Coin Booster, Full Grid, Endurance, Drift King, Paint Mixer), tyre smoke colours and premium paints. Catalog in `src/shop.js`.
 - **Coins:** earned by finishing position, difficulty, laps, overtakes and drift points.
 - **Race features:** start lights, slipstream, live standings, minimap, best laps, live lap delta, drift scoring, brake lights, wrong-way warning and auto-reset when stuck.
@@ -13,7 +13,7 @@ A top-down formula racing game for the web, built with Phaser 3. It runs on PC (
   - **Corner hints:** a card with the next turn's number, direction, severity, distance and target speed. It flashes **EASE OFF** or **BRAKE!** (with a beep) when you're coming in too fast. 3-2-1 marker boards also stand before the braking point of every slow corner.
   - **Camera:** "Top-down" (north up) or "Follow car" (rotates so the car always points up the screen).
   - **Camera motion:** the camera always looks ahead into the next corner. "Full" adds lean, inertia on launch and braking, kerb/grass rumble, impact jolts, a start-grid pan and a finish orbit. "Reduced" leaves those out (default when the OS asks for reduced motion).
-- **Graphics:** soft sun shadows, drifting cloud shadows, mowing stripes, gravel traps, rubbered-in brake marks, a start-light gantry that counts down with the race, colour grading, motion blur at top speed and a tilt-shift look behind the menus. Harbor Loop has a lake with boats, Dune Circuit a palm oasis. Graphics default to **Auto**: if a race keeps dropping frames, the game lowers its render resolution step by step, and as a last resort turns the extra effects off. "High" keeps full quality, "Low (faster)" turns the extras off straight away.
+- **Graphics:** soft sun shadows, drifting cloud shadows, mowing stripes, gravel traps, rubbered-in brake marks, a start-light gantry that counts down with the race, colour grading, motion blur at top speed and a tilt-shift look behind the menus. Harbor Loop and Riviera have a lake with boats, Coral Bay a palm-fringed lagoon, Dune Circuit a palm oasis, Frost Lake a frozen lake and Inferno Ring a lava pool. Graphics default to **Auto**: if a race keeps dropping frames, the game lowers its render resolution step by step, and as a last resort turns the extra effects off. "High" keeps full quality, "Low (faster)" turns the extras off straight away.
 - **Mobile:** on-screen pedals, a reset button, fullscreen and landscape lock when a race starts (Android), pause when the app goes to the background, safe-area aware layout, and offline play once installed (**Add to Home Screen**).
 - **Saving:** progress is stored in the browser (localStorage).
 
@@ -98,7 +98,7 @@ tools/                         dev server and test scripts
 
 - **Rename the game:** change `GAME_TITLE` in `src/config.js`, plus the `<title>` and loading text in `index.html` and `manifest.webmanifest`.
 - **Change car handling:** edit `BASE_STATS` in `src/config.js`.
-- **Change a track's look:** edit its theme in `src/game/themes.js` (ground colour, stripes, gravel, clouds, colour mood). To put a lake in a track's infield, add `lake: { margin: 400, style: 'harbor' }` (or `style: 'oasis'`) to its file in `src/game/tracks/`. `margin` is the gap between the inner wall and the shore.
+- **Change a track's look:** edit its theme in `src/game/themes.js` (ground colour, stripes, gravel, clouds, colour mood). To put a lake in a track's infield, add `lake: { margin: 400, style: 'harbor' }` (or `'oasis'`, `'lagoon'`, `'ice'`, `'lava'`) to its file in `src/game/tracks/`. `margin` is the gap between the inner wall and the shore.
 - **Change prices and rewards:** edit `UPGRADE_COSTS`, `POSITION_REWARDS` and `DIFFICULTIES` (incl. `trackPrice`) in `src/config.js`; shop items and their prices in `src/shop.js`.
 - **Add a track:**
   1. Copy a file in `src/game/tracks/` and change its `id`, `name` and `points`. Each point is `[x, y, cornerRadius]` and cars drive through the points in order.

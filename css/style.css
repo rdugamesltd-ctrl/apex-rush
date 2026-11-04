@@ -730,6 +730,7 @@ kbd {
 .race-opts {
   display: grid;
   gap: 12px;
+  margin-bottom: 14px;
 }
 
 .opt {
@@ -2531,23 +2532,234 @@ body.touch .hud-btn.reset {
   display: block;
 }
 
-.hud-hint {
-  position: absolute;
-  bottom: calc(16px + var(--sb));
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(9, 11, 30, 0.82);
-  border: 1px solid var(--line);
-  padding: 8px 16px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 700;
-  display: none;
-  white-space: nowrap;
+/* ---------- pre-race controls briefing ---------- */
+#brief {
+  z-index: 20;
+  pointer-events: auto;
+  display: grid;
+  place-items: center;
+  padding: var(--st) var(--sr) var(--sb) var(--sl);
+  background: radial-gradient(circle at 50% 50%, rgba(20, 24, 70, 0.35), rgba(6, 8, 22, 0.72));
+  animation: fadeIn 260ms var(--ease-out);
 }
 
-.hud-hint.on {
-  display: block;
+#brief[hidden] {
+  display: none;
+}
+
+#brief.out {
+  animation: briefFade 220ms ease-in forwards;
+}
+
+.brief-card {
+  position: relative;
+  width: min(700px, 92vw);
+  max-height: calc(100% - 16px);
+  overflow-y: auto;
+  padding: clamp(16px, 3.4vmin, 30px) clamp(18px, 4vmin, 38px);
+  text-align: center;
+  background: var(--panel);
+  border: 1px solid var(--line-2);
+  border-radius: 20px;
+  box-shadow: var(--hi), 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 122, 26, 0.18);
+  animation: briefIn 460ms var(--ease-out) backwards;
+}
+
+/* orange racing stripe along the top edge */
+.brief-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 38%;
+  height: 4px;
+  background: var(--accent-grad);
+  border-radius: 0 0 4px 4px;
+  transform: translateX(-50%) scaleX(0);
+  animation: briefStripe 520ms var(--ease-out) 180ms forwards;
+}
+
+#brief.out .brief-card {
+  animation: briefOut 220ms ease-in forwards;
+}
+
+.brief-tag {
+  color: var(--accent-2);
+  font-weight: 800;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: clamp(11px, 2vmin, 14px);
+}
+
+.brief-card h2 {
+  margin: 2px 0 clamp(10px, 2.6vmin, 22px);
+  font-size: clamp(26px, 6vmin, 46px);
+  font-weight: 900;
+  font-style: italic;
+  text-transform: uppercase;
+  line-height: 1.05;
+}
+
+.brief-list {
+  list-style: none;
+  margin: 0 0 clamp(14px, 3vmin, 26px);
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(6px, 1.4vmin, 12px);
+}
+
+.brief-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: clamp(7px, 1.5vmin, 12px) 14px;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  animation: briefRow 380ms var(--ease-out) backwards;
+  animation-delay: calc(200ms + var(--i) * 55ms);
+}
+
+.brief-list b {
+  font-size: clamp(14px, 2.8vmin, 20px);
+  font-weight: 800;
+}
+
+.brief-keys {
+  display: flex;
+  gap: 5px;
+  flex: none;
+  min-width: 4.6em;
+}
+
+.brief-keys kbd {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 9px;
+  font-size: 15px;
+  border-radius: 8px;
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.45);
+}
+
+.brief-pedal {
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-weight: 900;
+  font-size: 13px;
+  background: linear-gradient(180deg, #ff6b78, #c82a38);
+}
+
+.brief-pedal.gas {
+  background: linear-gradient(180deg, #4be08a, #1d9f55);
+}
+
+.brief-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+}
+
+.brief-icon.round {
+  border-radius: 50%;
+  background: var(--accent-grad);
+  border: 0;
+}
+
+.brief-ok {
+  min-width: 12em;
+  animation: briefRow 380ms var(--ease-out) backwards, briefGlow 1.8s ease-in-out 1s infinite;
+  animation-delay: calc(240ms + var(--i) * 55ms), 1s;
+}
+
+.brief-ok > span {
+  justify-content: center;
+}
+
+.brief-foot {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+@keyframes briefIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.92);
+  }
+}
+
+@keyframes briefOut {
+  to {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+
+@keyframes briefFade {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes briefStripe {
+  to {
+    transform: translateX(-50%) scaleX(1);
+  }
+}
+
+@keyframes briefRow {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@keyframes briefGlow {
+  50% {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 4px 0 #a84300, 0 0 0 6px rgba(255, 122, 26, 0.22),
+      0 10px 34px rgba(255, 106, 0, 0.55);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #brief,
+  #brief *,
+  .brief-card::before {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+@media (max-height: 420px) {
+  .brief-card h2 {
+    margin-bottom: 8px;
+  }
+  .brief-keys kbd,
+  .brief-icon {
+    min-width: 28px;
+    width: auto;
+    height: 28px;
+    font-size: 13px;
+  }
+  .brief-icon {
+    width: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .brief-list {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ---------- touch controls ---------- */
@@ -3048,9 +3260,6 @@ body.touch .hud-btn.reset {
   }
   .res-table td {
     padding: 3px 8px;
-  }
-  .hud-hint {
-    display: none !important;
   }
   .mm-foot .keys {
     display: none;

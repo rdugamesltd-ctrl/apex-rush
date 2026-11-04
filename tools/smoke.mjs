@@ -105,6 +105,9 @@ try {
     await page.click('[data-act="back"]');
     await page.click('[data-act="play"]');
     await page.click('[data-act="start"]');
+    await sleep(900);
+    await shot(page, 'desktop-race-briefing');
+    await page.click('[data-act="brief-ok"]');
     await sleep(3500);
     await shot(page, 'desktop-race-lights');
     await page.keyboard.down('ArrowUp');
@@ -195,6 +198,8 @@ try {
     await sleep(500);
     await shot(page, 'phone-tracks');
     await page.tap('[data-act="start"]');
+    await sleep(900);
+    await page.tap('[data-act="brief-ok"]');
     await sleep(6500);
     const touchOn = await page.evaluate(() => document.getElementById('touch').classList.contains('on'));
     if (!touchOn) errors.push('[touch] touch controls not shown on phone');

@@ -200,6 +200,165 @@ A shiny gold racing trophy cup with two handles on a dark base, front view.
 No text.
 ```
 
+## 5. New track themes (11 extra tracks)
+
+These images give the new tracks their own look. Until you add them, the game draws simple built-in versions, so you can add them in any order. Use the same chat as the other images (style block first), so the art style matches.
+
+| Theme | Tracks | Images |
+|---|---|---|
+| Autumn | Maple Hills | `tile_autumn`, `tree_autumn`, `hay_bale` |
+| Tropical | Coral Bay, Riviera | `tile_beach`, `palm_tree`, `beach_umbrella` |
+| Snow | Frost Lake, Glacier Pass | `tile_snow`, `tree_snow` |
+| Savanna | Savanna Run | `tile_savanna`, `acacia` |
+| Canyon | Red Canyon | `tile_redrock`, `rock_red` |
+| Volcano | Inferno Ring | `tile_basalt`, `tree_dead` |
+| Dockyard | Dockyard, Container Maze | `tile_yard`, `container_stack`, `warehouse_roof` |
+
+`palm_tree.png` is also used around the oasis on Dune Circuit. Wildwood uses the existing forest images. `rock.png` from section 3 is tinted to match the snow, savanna, canyon and volcano themes.
+
+### Ground tiles (square, 1024×1024, no transparency)
+
+Every tile must repeat seamlessly and be evenly lit. A bright corner or a big unique feature becomes an obvious repeating pattern in the game.
+
+**`tile_autumn.png`**
+```
+Seamless tileable texture of short olive-green autumn grass seen from directly
+above, scattered with small fallen leaves in orange, red and golden yellow.
+Leaves are small and evenly spread, no piles. Even colour across the whole
+square. No objects, no shadows, no lighting gradient. Fills the entire image
+edge to edge, no transparency.
+```
+
+**`tile_beach.png`**
+```
+Seamless tileable texture of fine pale tropical beach sand seen from directly
+above, warm cream-white with very soft ripples and a few tiny pink and white
+shell fragments. Even colour across the whole square. No footprints, no water,
+no objects, no shadows, no lighting gradient. Fills the entire image edge to
+edge, no transparency.
+```
+
+**`tile_snow.png`**
+```
+Seamless tileable texture of fresh packed snow seen from directly above, white
+with very light blue-grey soft drifts and fine sparkly grain. Even brightness
+across the whole square. No footprints, no tracks, no objects, no shadows, no
+lighting gradient. Fills the entire image edge to edge, no transparency.
+```
+
+**`tile_savanna.png`**
+```
+Seamless tileable texture of dry savanna grassland seen from directly above,
+golden-tan dry grass in short tufts with a few small patches of bare dusty
+earth. Even colour across the whole square. No trees, no animals, no objects,
+no shadows, no lighting gradient. Fills the entire image edge to edge, no
+transparency.
+```
+
+**`tile_redrock.png`**
+```
+Seamless tileable texture of red desert canyon ground seen from directly above,
+terracotta and rust-orange dusty rock with faint wavy sediment bands and small
+pebbles. Even colour across the whole square. No large rocks, no plants, no
+shadows, no lighting gradient. Fills the entire image edge to edge, no
+transparency.
+```
+
+**`tile_basalt.png`**
+```
+Seamless tileable texture of dark volcanic basalt ground seen from directly
+above, charcoal-grey cooled lava rock with fine grit, a few small cracks with a
+faint orange glow inside. Mostly dark grey (not black) so objects stay visible.
+Even brightness across the whole square. No lava pools, no objects, no shadows,
+no lighting gradient. Fills the entire image edge to edge, no transparency.
+```
+
+**`tile_yard.png`**
+```
+Seamless tileable texture of a worn industrial port yard seen from directly
+above, medium-grey weathered concrete and asphalt with faint oil stains, small
+cracks and a few faded yellow paint marks. Even colour across the whole square.
+No containers, no vehicles, no text, no shadows, no lighting gradient. Fills
+the entire image edge to edge, no transparency.
+```
+
+### Scenery (transparent background)
+
+**`tree_autumn.png`** — 1024×1024
+```
+A single round deciduous tree in autumn seen from directly above: a fluffy
+circular canopy of clustered rounded leaf clumps in orange, red and golden
+yellow, darker red-orange at the edges and light yellow highlights on top.
+Only the canopy is visible (no trunk).
+```
+
+**`tree_snow.png`** — 1024×1024
+```
+A single snow-covered pine / fir tree seen from directly above: a star-shaped
+layered canopy of dark green needle branches radiating from the centre, with
+thick white snow lying on top of the branches and a white snowy centre. Only
+the canopy is visible.
+```
+
+**`palm_tree.png`** — 1024×1024
+```
+A single tropical palm tree seen from directly above: 8-9 long feathery green
+fronds radiating out from a small brown centre like a star, lighter green on
+the top of each frond, a few small coconuts at the centre. Only the crown is
+visible (no trunk).
+```
+
+**`acacia.png`** — landscape, 1536×1024
+```
+A single African acacia tree seen from directly above: a wide, flat, slightly
+oval umbrella-shaped canopy made of many small olive-green leaf clusters with
+small gaps between them, lighter yellow-green highlights on top. Only the
+canopy is visible (no trunk).
+```
+
+**`tree_dead.png`** — 1024×1024
+```
+A single dead, burnt tree seen from directly above: bare charcoal-black and
+dark grey branches spreading out from the centre like a star, thin twisted
+twigs at the tips, no leaves.
+```
+
+**`rock_red.png`** — 1024×1024
+```
+A single large red sandstone boulder seen from directly above, angular faceted
+shape in rust-red, terracotta and orange, lighter orange top facets and darker
+red-brown edges.
+```
+
+**`hay_bale.png`** — 1024×1024
+```
+A single round hay bale lying flat on the ground seen from directly above,
+showing its circular end: golden straw spiral rings from the centre outwards.
+```
+
+**`beach_umbrella.png`** — 1024×1024
+```
+An open beach umbrella seen from directly above: a perfect circle split into
+8 wedges alternating red and white, small dark tip in the centre.
+```
+
+**`container_stack.png`** — landscape, 1536×1024
+```
+A neat block of shipping containers seen from directly above, 2 columns by 3
+rows of long containers side by side, in red, blue, yellow, green and orange,
+each with a corrugated roof and darker edges. The block is a clean rectangle.
+No text, no logos.
+```
+
+**`warehouse_roof.png`** — landscape, 1536×1024
+```
+The flat roof of a large port warehouse seen from directly above, rectangular,
+light grey corrugated metal roof panels in long strips, a darker border, a row
+of skylights and a few vents along the middle. No text.
+```
+
+> After you add new images, run `npm run optimize` once (see the README) so the published game loads them fast. The local dev server picks them up without it.
+
 ---
 
 ## Optional: home-screen icon
@@ -230,3 +389,6 @@ This one isn't loaded automatically. To use it:
 | building_roof_2.png | 1024×1024 | transparent |
 | logo.png | 1536×1024 | transparent |
 | icon_engine / turbo / tires / brakes / aero / coin / trophy .png | 1024×1024 | transparent |
+| tile_autumn / beach / snow / savanna / redrock / basalt / yard .png | 1024×1024 | full, no transparency |
+| tree_autumn, tree_snow, palm_tree, tree_dead, rock_red, hay_bale, beach_umbrella .png | 1024×1024 | transparent |
+| acacia.png, container_stack.png, warehouse_roof.png | 1536×1024 | transparent |

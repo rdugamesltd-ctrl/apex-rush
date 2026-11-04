@@ -136,7 +136,7 @@ export function mowTexture(scene) {
 
 // Large soft patches of lighter and darker ground that break up tile repetition.
 export function macroTexture(scene, theme) {
-  const key = `fx_macro_${theme.ground}`;
+  const key = `fx_macro_${theme.ground}_${theme.macro.light}_${theme.macro.dark}`;
   if (scene.textures.exists(key)) return key;
   const m = theme.macro;
   const S = 256;

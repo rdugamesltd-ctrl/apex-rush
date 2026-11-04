@@ -12,6 +12,12 @@ const SURFACE = {
 
 const approach = (v, target, step) => (v < target ? Math.min(target, v + step) : Math.max(target, v - step));
 
+// Drift assist: while sliding, steering sets the drift angle instead of spinning the
+// nose freely (digital keys and touch pads can't catch a slide by counter-steering).
+const DRIFT_ANGLE = 0.7; // rad, nose vs direction of travel when steering into the slide
+const DRIFT_EXIT = 0.17; // a slide shallower than this (and not held) ends the drift
+const GAS_TAP = 0.3; // s: lift and re-press the gas within this while steering = drift
+
 export class Car {
   constructor({ id, name, color, stats, isPlayer = false }) {
     this.id = id;
@@ -36,6 +42,9 @@ export class Car {
     this.surface = 'road';
     this.slipstream = 0;
     this.drifting = false;
+    this.liftTime = 9; // seconds since the gas was released
+    this.boost = 0; // seconds of launch boost left
+    this.mass = isPlayer ? 1.5 : 1; // the player's car shrugs off AI contact a little
     this.ghost = 0;
     // race tracking (filled by RaceManager)
     this.idx = -1;
@@ -60,6 +69,8 @@ export class Car {
     this.speed = 0;
     this.slip = 0;
     this.steer = 0;
+    this.drifting = false;
+    this.boost = 0;
   }
 
   get forwardX() {
@@ -90,14 +101,20 @@ export class Car {
     this.prevX = this.x;
     this.prevY = this.y;
     this.prevHeading = this.heading;
+    // gas tap: the pedal comes back on shortly after a lift (player input only)
+    const gasTap = !!ctl.gasTap && ctl.throttle > 0 && this.throttle === 0 && this.liftTime < GAS_TAP;
+    this.liftTime = ctl.throttle > 0 ? 0 : this.liftTime + dt;
     this.throttle = ctl.throttle;
     this.brake = ctl.brake;
     this.handbrake = !!ctl.handbrake;
     if (this.ghost > 0) this.ghost = Math.max(0, this.ghost - dt);
+    if (this.boost > 0) this.boost = Math.max(0, this.boost - dt);
 
-    // steering: quick to centre, slightly slower to lock
+    // steering: quick to centre; slower to lock at speed, so a key tap is a small
+    // correction on the straight but full lock still comes fast in a hairpin
     const back = Math.abs(ctl.steer) < Math.abs(this.steer) || Math.sign(ctl.steer) !== Math.sign(this.steer);
-    this.steer = approach(this.steer, ctl.steer, (back ? 9 : 5.5) * dt);
+    const lockRate = 7 - 3 * Math.min(1, Math.abs(this.speed) / st.topSpeed);
+    this.steer = approach(this.steer, ctl.steer, (back ? 9 : lockRate) * dt);
 
     const surf = SURFACE[this.surface] || SURFACE.road;
     let fx = Math.cos(this.heading);
@@ -108,7 +125,8 @@ export class Car {
     const top = st.topSpeed * surf.top * (1 + 0.07 * this.slipstream);
     if (ctl.throttle > 0 && vf >= -10) {
       const r = Math.max(0, vf) / top;
-      vf += ctl.throttle * st.accel * Math.max(0, 1 - r * r) * (r < 0.2 ? 1.15 : 1) * dt;
+      const kick = this.boost > 0 ? 1.6 : 1;
+      vf += ctl.throttle * st.accel * kick * Math.max(0, 1 - r * r) * (r < 0.2 ? 1.15 : 1) * dt;
     }
     if (ctl.brake > 0) {
       if (vf > 15) vf = Math.max(0, vf - ctl.brake * st.brake * dt);
@@ -121,14 +139,41 @@ export class Car {
     vf -= vf * drag * dt;
     if (vf > top) vf -= (vf - top) * 2.4 * dt; // e.g. running onto grass at speed
 
-    // yaw: limited by turn rate at low speed and by lateral grip at high speed
+    // Drift state. A slide starts from the handbrake, a gas tap while steering hard, or
+    // a real loss of grip (a big slip angle - not the small one of fast grip cornering).
     const sp = Math.abs(vf);
+    const slipAbs = Math.abs(vr);
+    const angle = Math.atan2(vr, Math.max(1, vf)); // velocity vs nose
+    const hard = Math.abs(this.steer) > 0.5 && vf > st.topSpeed * 0.4;
+    if (!this.drifting) {
+      if ((ctl.handbrake && vf > 120) || (gasTap && hard) || (slipAbs > 95 && Math.abs(angle) > 0.3)) {
+        this.drifting = true;
+      }
+    } else if (!ctl.handbrake && (vf < 110 || (Math.abs(angle) < DRIFT_EXIT && this.steer * Math.sign(-angle) <= 0.3))) {
+      this.drifting = false;
+    }
+
+    // yaw: limited by turn rate at low speed and by lateral grip at high speed
     const aLat = st.aLat * (1 + st.aero * Math.min(1, sp / st.topSpeed)) * surf.grip;
     let wMax = Math.min(st.turnRate, (aLat * 1.15) / Math.max(sp, 1));
-    // drifting: the nose may rotate past what the tyres could carry, so the tail hangs out
-    if (this.drifting) wMax = Math.max(wMax, st.turnRate * 0.8);
+    // trail braking: weight on the nose bites the front tyres for a sharper turn-in
+    if (ctl.brake > 0 && vf > 200) wMax *= 1.12;
     wMax *= Math.min(1, sp / 110);
-    this.heading += this.steer * wMax * (vf >= 0 ? 1 : -1) * dt;
+    if (this.drifting && vf > 0) {
+      // the nose chases a drift angle picked by the steering: into the slide holds it,
+      // centred lets it unwind, steering out of it snaps the car straight
+      let dir = Math.sign(-angle);
+      if (Math.abs(angle) < 0.05 && this.steer) dir = Math.sign(this.steer);
+      const into = this.steer * (dir || 1);
+      const want = (dir || 0) * Math.max(0, into) * DRIFT_ANGLE;
+      const k = into > 0.1 ? 4 : into < -0.1 ? 7 : 1.8;
+      const turn = (aLat * 0.95) / Math.max(sp, 1); // how fast the slide carries the car round
+      const w = (want + angle) * k + turn * dir * Math.min(1, Math.abs(-angle) / 0.3);
+      const cap = st.turnRate * 1.3;
+      this.heading += Math.max(-cap, Math.min(cap, w)) * dt;
+    } else {
+      this.heading += this.steer * wMax * (vf >= 0 ? 1 : -1) * dt;
+    }
 
     // rebuild velocity in the old frame, then express it in the new heading frame
     const vx = fx * vf - fy * vr;
@@ -138,17 +183,11 @@ export class Car {
     vf = vx * fx + vy * fy;
     vr = vx * -fy + vy * fx;
 
-    // Drift model: grip drops once the tyres break away (sliding friction < static),
-    // and recovers only when the slide has mostly died. Power-over and the handbrake
-    // both push the rear loose; thrust always stays along the nose.
-    const slipAbs = Math.abs(vr);
-    const hard = Math.abs(this.steer) > 0.5 && vf > st.topSpeed * 0.4;
-    if (ctl.handbrake && vf > 120) this.drifting = true;
-    else if (!this.drifting && slipAbs > 95) this.drifting = true;
-    else if (this.drifting && slipAbs < 35 && !ctl.handbrake) this.drifting = false;
+    // Grip: sliding friction is lower than static, so a drift corners a little slower
+    // than a clean grip line. Power and lift-off add a touch of rotation when steering hard.
     let g = st.grip * surf.grip;
-    if (hard && ctl.throttle > 0) g *= 0.65; // power oversteer
-    if (hard && ctl.throttle === 0 && !ctl.brake) g *= 0.7; // lift-off oversteer
+    if (hard && ctl.throttle > 0) g *= 0.8; // power oversteer
+    if (hard && ctl.throttle === 0 && !ctl.brake) g *= 0.75; // lift-off oversteer
     if (this.drifting) g *= 0.4;
     if (ctl.handbrake) {
       g *= 0.4;

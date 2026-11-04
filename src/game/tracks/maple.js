@@ -1,0 +1,21 @@
+export default {
+  id: 'maple',
+  name: 'Maple Hills',
+  theme: 'autumn',
+  difficulty: 'easy',
+  width: 340,
+  scale: 100,
+  startOffset: 1300,
+  points: [
+    [0, 0, 8],
+    [56, 0, 10],
+    [66, 12, 6],
+    [50, 20, 5],
+    [60, 34, 6],
+    [44, 42, 8],
+    [20, 34, 8],
+    [2, 40, 6],
+    [-10, 26, 7],
+    [-6, 10, 6],
+  ],
+};

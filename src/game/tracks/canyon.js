@@ -1,0 +1,23 @@
+export default {
+  id: 'canyon',
+  name: 'Red Canyon',
+  theme: 'canyon',
+  difficulty: 'hard',
+  width: 310,
+  scale: 88,
+  startOffset: 1400,
+  points: [
+    [0, 0, 6],
+    [54, 0, 8],
+    [62, 12, 4],
+    [48, 18, 4],
+    [60, 28, 5],
+    [54, 40, 6],
+    [30, 34, 5],
+    [22, 46, 5],
+    [4, 48, 6],
+    [-8, 36, 4],
+    [6, 24, 4],
+    [-6, 14, 5],
+  ],
+};

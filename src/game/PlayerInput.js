@@ -46,7 +46,8 @@ export class PlayerInput {
     return {
       throttle: k.gas || t.gas ? 1 : 0,
       brake: k.brake || t.brake ? 1 : 0,
-      handbrake: k.handbrake, // keyboard only (Space / Shift); touch has gas and brake
+      handbrake: k.handbrake, // keyboard only (Space / Shift); touch drifts with a gas tap
+      gasTap: true, // lift and re-press the gas while steering hard = drift (see Car.step)
       steer: (k.right || t.right ? 1 : 0) - (k.left || t.left ? 1 : 0),
     };
   }

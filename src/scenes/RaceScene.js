@@ -92,7 +92,7 @@ export class RaceScene extends Phaser.Scene {
     this.input2 = this.isRace
       ? new PlayerInput({
           onPause: () => bus.emit(this.paused ? 'ui:resume' : 'ui:pause'),
-          onRespawn: () => this.rm.playerRespawn(),
+          onRespawn: () => !this.waiting && this.rm.playerRespawn(),
         })
       : null;
 
@@ -104,14 +104,19 @@ export class RaceScene extends Phaser.Scene {
     });
     this.events.once('shutdown', () => this.cleanup());
 
+    // races hold on the grid (lights off) until the controls briefing is dismissed;
+    // autopilot (debug/automation) races start straight away
+    this.waiting = this.isRace && !cfg.autopilot;
     if (this.isRace) {
-      UI.enterRace({
-        track: this.track,
-        laps: cfg.laps,
-        total: this.rm.cars.length,
-        unitsSetting: sd.settings.units,
-        showHint: !isCoarsePointer(),
-      });
+      UI.enterRace(
+        {
+          track: this.track,
+          laps: cfg.laps,
+          total: this.rm.cars.length,
+          unitsSetting: sd.settings.units,
+        },
+        this.waiting ? () => (this.waiting = false) : null
+      );
       sfx.startEngine();
       bus.emit('race:start');
     }
@@ -186,6 +191,13 @@ export class RaceScene extends Phaser.Scene {
         if (this.camMotion) this.zoomPunch = -0.07;
         this.time.delayedCall(2500, () => this.sprites.get(this.player)?.marker?.setVisible(false));
       },
+      onPerfectStart: () => {
+        if (!this.isRace) return;
+        popup('PERFECT START!', 'best');
+        sfx.whoosh();
+        if (this.camMotion) this.zoomPunch = -0.1;
+        vibrate(40);
+      },
       onImpact: (car, v, x, y) => {
         if (this.nearCamera(car)) this.fx.impact(x, y, v);
         if (car === this.player) {
@@ -254,7 +266,8 @@ export class RaceScene extends Phaser.Scene {
     }
 
     const dt = Math.min(delta, 100) / 1000;
-    this.acc += dt * this.timeScale;
+    if (this.waiting) this.acc = 0;
+    else this.acc += dt * this.timeScale;
     const ctl = this.input2 && this.rm.state !== 'done' ? this.input2.read() : IDLE;
     let steps = 0;
     while (this.acc >= PHYSICS_DT && steps < 40) {
@@ -570,7 +583,7 @@ export class RaceScene extends Phaser.Scene {
 
   // ---------- race flow ----------
   pauseRace() {
-    if (!this.isRace || this.paused || this.rm.state === 'done') return;
+    if (!this.isRace || this.paused || this.waiting || this.rm.state === 'done') return;
     this.paused = true;
     sfx.updateEngine(0, 0, 0, 0, false);
     UI.showPause();
